@@ -5,6 +5,7 @@ const app = express();
 const blogsRouter = require('./routes/blogRouter');
 const commentsRouter = require('./routes/commentsRouter');
 
+app.use(express.urlencoded({extended: true}));
 
 app.use('/blogs', blogsRouter);
 app.use('/comments', commentsRouter);

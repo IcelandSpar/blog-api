@@ -6,6 +6,13 @@ const getComments = async (req, res) => {
       orderBy: {
         createdAt: req.query.direction,
       },
+      include: {
+        user: {
+          select: {
+            username: true
+          }
+        }
+      }
     });
 
     res.json(comments);
@@ -28,6 +35,56 @@ const getComments = async (req, res) => {
   }
 };
 
+const postComment = async (req, res) => {
+  await prisma.comments.create({
+    data: {
+      commentTitle: req.body.title,
+      comment: req.body.comment,
+      userId: req.body.userId,
+      blogId: req.body.blogId,
+    }
+  })
+  console.log('comment posted');
+  res.redirect('/comments');
+};
+
+const updateLikeOrDislikeComment = async (req, res) => {
+
+  if(req.query.like == 'true') {
+
+    await prisma.comments.update({
+      where: {
+        id: req.query.commentId,
+      },
+      data: {
+        likes: {
+          increment: 1,
+        }
+      }
+    });
+
+  } else {
+
+    await prisma.comments.update({
+      where: {
+        id: req.query.commentId,
+      },
+      data: {
+        dislikes: {
+          increment: 1,
+        }
+      }
+    });
+
+  }
+
+
+
+  res.redirect('/comments');
+};
+
 module.exports = {
   getComments,
+  postComment,
+  updateLikeOrDislikeComment,
 };
