@@ -11,6 +11,11 @@ const getComments = async (req, res) => {
           select: {
             username: true
           }
+        },
+        UserLikedComments: {
+          select: {
+            like: true,
+          }
         }
       }
     });
@@ -21,6 +26,18 @@ const getComments = async (req, res) => {
       orderBy: {
         likes: req.query.direction,
       },
+      include: {
+        user: {
+          select: {
+            username: true
+          }
+        },
+        UserLikedComments: {
+          select: {
+            like: true,
+          }
+        }
+      }
     });
 
     res.json(comments);
@@ -29,6 +46,18 @@ const getComments = async (req, res) => {
       orderBy: {
         createdAt: "desc",
       },
+      include: {
+        user: {
+          select: {
+            username: true
+          }
+        },
+        UserLikedComments: {
+          select: {
+            like: true,
+          }
+        }
+      }
     });
 
     res.json(comments);
@@ -50,6 +79,8 @@ const postComment = async (req, res) => {
 
 const updateLikeOrDislikeComment = async (req, res) => {
 
+  let operator = (req.query.operatorType == 'increment' || req.query.operatorType == 'decrement') ? req.query.operatorType : 'increment';
+
   if(req.query.like == 'true') {
 
     await prisma.comments.update({
@@ -58,12 +89,12 @@ const updateLikeOrDislikeComment = async (req, res) => {
       },
       data: {
         likes: {
-          increment: 1,
+          [operator]: 1,
         }
       }
     });
 
-  } else {
+  } else if (req.query.like == 'false') {
 
     await prisma.comments.update({
       where: {
@@ -71,7 +102,7 @@ const updateLikeOrDislikeComment = async (req, res) => {
       },
       data: {
         dislikes: {
-          increment: 1,
+          [operator]: 1,
         }
       }
     });
@@ -82,6 +113,8 @@ const updateLikeOrDislikeComment = async (req, res) => {
 
   res.redirect('/comments');
 };
+
+
 
 module.exports = {
   getComments,
