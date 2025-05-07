@@ -1,9 +1,12 @@
 const prisma = require("../db/prismaClient");
 
+
 const getComments = async (req, res) => {
-  
   if (req.query.sort == "date" && req.query.direction && req.query.userId) {
     const comments = await prisma.comments.findMany({
+      where: {
+        blogId: req.params.blogId
+      },
       orderBy: {
         createdAt: req.query.direction,
       },
@@ -28,6 +31,9 @@ const getComments = async (req, res) => {
     res.json(comments);
   } else if (req.query.sort == "likes" && req.query.direction && req.query.userId) {
     const comments = await prisma.comments.findMany({
+      where: {
+        blogId: req.params.blogId
+      },
       orderBy: {
         likes: req.query.direction,
       },
@@ -52,6 +58,9 @@ const getComments = async (req, res) => {
     res.json(comments);
   } else if(req.query.userId == undefined){
     const comments = await prisma.comments.findMany({
+      where: {
+        blogId: req.params.blogId
+      },
       orderBy: {
         createdAt: "desc",
       },
@@ -67,6 +76,9 @@ const getComments = async (req, res) => {
     res.json(comments);
   } else if(req.query.userId != undefined) {
     const comments = await prisma.comments.findMany({
+      where: {
+        blogId: req.params.blogId
+      },
       orderBy: {
         createdAt: "desc",
       },
@@ -143,9 +155,50 @@ const updateLikeOrDislikeComment = async (req, res) => {
 };
 
 
+// will do the opposite of current value of author heart true/false
+
+const updateCommentAuthorHeart = async (req, res) => {
+
+  // check if correct author of blog
+
+  const blogData = await prisma.blogs.findFirst({
+    where: {
+      id: req.params.blogId,
+    }
+  });
+
+  if (blogData.authorId == req.params.authorId) {
+    const commentData = await prisma.comments.findFirst({
+      where: {
+        blogId: req.params.blogId,
+        id: req.params.commentId,
+      },
+      
+    })
+
+    const updatedComment = await prisma.comments.update({
+      where: {
+        blogId: req.params.blogId,
+        id: req.params.commentId,
+      },
+      data: {
+        authorHeart: !commentData.authorHeart
+      }
+    });
+
+
+    res.json(updatedComment);
+  }
+
+
+
+};
+
+
 
 module.exports = {
   getComments,
   postComment,
   updateLikeOrDislikeComment,
+  updateCommentAuthorHeart,
 };
