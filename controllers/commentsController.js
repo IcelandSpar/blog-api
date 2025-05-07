@@ -1,7 +1,8 @@
 const prisma = require("../db/prismaClient");
 
 const getComments = async (req, res) => {
-  if (req.query.sort == "date" && req.query.direction) {
+  
+  if (req.query.sort == "date" && req.query.direction && req.query.userId) {
     const comments = await prisma.comments.findMany({
       orderBy: {
         createdAt: req.query.direction,
@@ -13,7 +14,11 @@ const getComments = async (req, res) => {
           }
         },
         UserLikedComments: {
+          where: {
+            userId: req.query.userId,
+          },
           select: {
+            userId: true,
             like: true,
           }
         }
@@ -21,7 +26,7 @@ const getComments = async (req, res) => {
     });
 
     res.json(comments);
-  } else if (req.query.sort == "likes" && req.query.direction) {
+  } else if (req.query.sort == "likes" && req.query.direction && req.query.userId) {
     const comments = await prisma.comments.findMany({
       orderBy: {
         likes: req.query.direction,
@@ -33,7 +38,11 @@ const getComments = async (req, res) => {
           }
         },
         UserLikedComments: {
+          where: {
+            userId: req.query.userId,
+          },
           select: {
+            userId: true,
             like: true,
           }
         }
@@ -41,7 +50,22 @@ const getComments = async (req, res) => {
     });
 
     res.json(comments);
-  } else {
+  } else if(req.query.userId == undefined){
+    const comments = await prisma.comments.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        user: {
+          select: {
+            username: true
+          }
+        },
+      }
+    });
+
+    res.json(comments);
+  } else if(req.query.userId != undefined) {
     const comments = await prisma.comments.findMany({
       orderBy: {
         createdAt: "desc",
@@ -53,7 +77,11 @@ const getComments = async (req, res) => {
           }
         },
         UserLikedComments: {
+          where: {
+            userId: req.query.userId,
+          },
           select: {
+            userId: true,
             like: true,
           }
         }
