@@ -7,6 +7,21 @@ const getBlogs = async (req, res) => {
   res.json(blogs);
 };
 
+const postBlog = async (req, res) => {
+
+  const blogToPost = await prisma.blogs.create({
+    data: {
+      title: req.body.title,
+      content: req.body.content,
+      published: (req.body.published == 'true' ? true : false),
+      authorId: req.body.authorId,
+    }
+  });
+
+  console.log('Blog posted');
+  res.json(blogToPost);
+};
+
 
 const updatePublishStatus = async (req, res) => {
   const blogToUpdate = await prisma.blogs.findFirst({
@@ -34,4 +49,5 @@ const updatePublishStatus = async (req, res) => {
 module.exports = {
   getBlogs,
   updatePublishStatus,
+  postBlog,
 }
