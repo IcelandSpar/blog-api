@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getBlogs, updatePublishStatus, postBlog } = require('../controllers/blogsController');
+const { getBlogs, updatePublishStatus, postBlog, likeBlog } = require('../controllers/blogsController');
 
 const blogRouter = Router();
 
@@ -21,6 +21,8 @@ blogRouter.post('/post-blog', postBlog);
 // body.blogId
 
 blogRouter.put('/publish', updatePublishStatus);
+
+blogRouter.put('/like-blog/:blogId/:userId/:likeBool', likeBlog);
 
 
 module.exports = blogRouter;

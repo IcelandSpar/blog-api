@@ -44,10 +44,53 @@ const updatePublishStatus = async (req, res) => {
 
 };
 
+const likeBlog = async (req, res) => {
+
+  const checkUserBlogLike = await prisma.usersLikedBlogs.findFirst({
+    where: {
+      blogId: req.params.blogId,
+      userId: req.params.userId,
+    }
+  });
+
+  const likeBool = (req.params.likeBool == 'true' ? true : false);
+
+  if(checkUserBlogLike == null) {
+    const createdLikedRecord = await prisma.usersLikedBlogs.create({
+      data: {
+        like: likeBool,
+        blogId: req.params.blogId,
+        userId: req.params.userId,
+      }
+    })
+    res.json(createdLikedRecord);
+  } else if(checkUserBlogLike.like == likeBool) {
+    console.log(checkUserBlogLike.like, likeBool)
+    const deletedLikeRecord = await prisma.usersLikedBlogs.delete({
+      where: {
+        id: checkUserBlogLike.id,
+      },
+    });
+    res.json(deletedLikeRecord);
+
+  } else if(checkUserBlogLike.like != likeBool) {
+    const updatedLikeRecord = await prisma.usersLikedBlogs.update({
+      where: {
+        id: checkUserBlogLike.id,
+      },
+      data: {
+        like: likeBool,
+      }
+    });
+    res.json(updatedLikeRecord)
+  }
+};
+
 
 
 module.exports = {
   getBlogs,
   updatePublishStatus,
   postBlog,
+  likeBlog,
 }
