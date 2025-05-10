@@ -1,12 +1,15 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
+require('./passport/local');
 
 const blogsRouter = require('./routes/blogRouter');
 const commentsRouter = require('./routes/commentsRouter');
+const auth = require('./routes/auth');
 
 app.use(express.urlencoded({extended: true}));
 
+app.use('/login', auth);
 app.use('/blogs', blogsRouter);
 app.use('/comments', commentsRouter);
 
