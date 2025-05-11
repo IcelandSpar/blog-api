@@ -6,6 +6,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
+const bcrypt = require('bcryptjs');
 
 passport.use(
   new LocalStrategy(async function (username, password, cb) {
@@ -13,12 +14,15 @@ passport.use(
       const user = await prisma.users.findFirst({
         where: {
           username,
-          password,
         },
       });
+      const match = await bcrypt.compare(password, user.password);
+      if(!match) {
+        return cb(null, false, { message: 'Incorrect password' });
+      }
 
       if (!user) {
-        return cb(null, user, { messge: "Incorrect email or password." });
+        return cb(null, false, { message: "Incorrect email or password." });
       }
 
       return cb(null, user, { message: "Logged In Successfully" });
