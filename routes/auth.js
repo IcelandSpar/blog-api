@@ -19,10 +19,14 @@ auth.post('/', function(req, res, next) {
         if(err) {
           res.send(err);
         }
-        const token = jwt.sign(user, process.env.JWT_SECRET);
+        const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1h' });
         return res.json({user, token});
       });
     })(req, res)
 });
+
+auth.get('/test-user-route', passport.authenticate('jwt', {session: false}), (req, res) => {
+  res.send('You made it!!');
+})
 
 module.exports = auth;
