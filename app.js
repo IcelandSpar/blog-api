@@ -1,11 +1,14 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
 const blogsRouter = require('./routes/blogRouter');
 const commentsRouter = require('./routes/commentsRouter');
 const auth = require('./routes/auth');
 const registerRouter = require('./routes/registerRouter')
+
+app.use(cors());
 
 app.use(express.urlencoded({extended: true}));
 
