@@ -1,10 +1,14 @@
 const { Router } = require('express');
-const { getBlogs, updatePublishStatus, postBlog, likeBlog } = require('../controllers/blogsController');
+const { getBlogs, updatePublishStatus, postBlog, likeBlog, getBlogPreviews } = require('../controllers/blogsController');
 
 const blogRouter = Router();
 
 
+
 blogRouter.get('/', getBlogs);
+
+blogRouter.get('/preview', getBlogPreviews);
+
 
 // Form data needed to post blog: 
 

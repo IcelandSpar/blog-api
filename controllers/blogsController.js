@@ -7,6 +7,28 @@ const getBlogs = async (req, res) => {
   res.json(blogs);
 };
 
+const getBlogPreviews = async (req, res) => {
+  const blogPreview = await prisma.blogs.findMany({
+    where: {
+      published: true,
+    },
+
+    include: {
+      author: {
+        include: {
+          user: {
+            select: {
+              username: true,
+            }
+          }
+        }
+      }
+    }
+  });
+
+  res.json(blogPreview);
+};
+
 const postBlog = async (req, res) => {
 
   const blogToPost = await prisma.blogs.create({
@@ -90,6 +112,7 @@ const likeBlog = async (req, res) => {
 
 module.exports = {
   getBlogs,
+  getBlogPreviews,
   updatePublishStatus,
   postBlog,
   likeBlog,
