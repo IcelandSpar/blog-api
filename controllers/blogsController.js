@@ -7,6 +7,28 @@ const getBlogs = async (req, res) => {
   res.json(blogs);
 };
 
+const getBlog = async (req, res) => {
+  const blog = await prisma.blogs.findFirst({
+    where: {
+      id: req.params.blogId
+    },
+
+    include: {
+      author: {
+        include: {
+          user: {
+            select: {
+              username: true,
+            }
+          }
+        }
+      }
+    }
+  });
+
+  res.json(blog);
+};
+
 const getBlogPreviews = async (req, res) => {
   const blogPreview = await prisma.blogs.findMany({
     where: {
@@ -112,6 +134,7 @@ const likeBlog = async (req, res) => {
 
 module.exports = {
   getBlogs,
+  getBlog,
   getBlogPreviews,
   updatePublishStatus,
   postBlog,
