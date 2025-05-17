@@ -25,8 +25,10 @@ auth.post('/', function(req, res, next) {
     })(req, res)
 });
 
-auth.get('/test-user-route', passport.authenticate('jwt', {session: false}), (req, res) => {
-  res.send('You made it!!');
+auth.get('/check-if-auth', passport.authenticate('jwt', {session: false}), (req, res) => {
+  res.json({
+    isAuth: true,
+  })
 })
 
 module.exports = auth;

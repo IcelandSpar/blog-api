@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { getBlogs, getBlog, updatePublishStatus, postBlog, likeBlog, getBlogPreviews } = require('../controllers/blogsController');
-
+const passport = require('passport');
 const blogRouter = Router();
 
 

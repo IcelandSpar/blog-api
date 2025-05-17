@@ -32,7 +32,7 @@ const getBlog = async (req, res) => {
 const getBlogPreviews = async (req, res) => {
   const blogPreview = await prisma.blogs.findMany({
     where: {
-      published: true,
+      // published: true,
     },
 
     include: {
