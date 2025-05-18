@@ -39,9 +39,9 @@ model Comments {
   dislikes     Int      @default(0)
   authorHeart  Boolean  @default(false)
 
-  user                  Users                   @relation(fields: [userId], references: [id])
+  user                  Users                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                String
-  blogs                 Blogs                   @relation(fields: [blogId], references: [id])
+  blogs                 Blogs                   @relation(fields: [blogId], references: [id], onDelete: Cascade)
   blogId                String
   UserLikedComments     UserLikedComments[]
   authorHeartedComments authorHeartedComments[]

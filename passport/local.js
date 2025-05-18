@@ -39,18 +39,24 @@ passport.use(
       secretOrKey: process.env.JWT_SECRET,
     },
     async function (jwtPayload, done) {
-      return await prisma.users
-        .findFirst({
+
+      try {
+        const user = await prisma.users.findFirst({
           where: {
             id: jwtPayload.sub,
-          },
-        })
-        .then((user) => {
-          return done(null, user);
-        })
-        .catch((err) => {
-          return done(err);
+          }
         });
+        if(user) {
+          return done(null, user);
+        } else {
+          return done(null, false)
+        }
+      } catch(err) {
+        if(err) {
+          return done(err, false);
+        }
+  
+      }
     }
   )
 );

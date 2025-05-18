@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const passport = require('passport');
 const { getComments, postComment, updateLikeOrDislikeComment, updateCommentAuthorHeart } = require('../controllers/commentsController');
 const prisma = require('../db/prismaClient');
 
@@ -18,7 +19,16 @@ commentsRouter.get('/:blogId', getComments);
 //   blogId: req.body.blogId,
 // }
 
-commentsRouter.post('/post-comment', postComment);
+commentsRouter.post('/post-comment', passport.authenticate('jwt', {session: false}), postComment);
+
+commentsRouter.delete('/delete/:commentId', async (req, res) => {
+  const deletedItem = await prisma.comments.delete({
+    where: {
+      id: req.params.commentId,
+    }
+  });
+  res.json(deletedItem);
+});
 
 // example: 
 // http://localhost:3000/comments/like-comment?like=true/false&commentId=1234&operatorType=increment/decrement

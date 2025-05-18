@@ -20,6 +20,7 @@ auth.post('/', function(req, res, next) {
           res.send(err);
         }
         const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1h' });
+
         return res.json({user, token});
       });
     })(req, res)

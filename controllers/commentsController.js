@@ -1,3 +1,7 @@
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+
+
 const prisma = require("../db/prismaClient");
 
 
@@ -105,16 +109,20 @@ const getComments = async (req, res) => {
 };
 
 const postComment = async (req, res) => {
+
+  const token = req.headers.authorization.split(' ')[1];
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
   await prisma.comments.create({
     data: {
       commentTitle: req.body.title,
       comment: req.body.comment,
-      userId: req.body.userId,
+      userId: decoded.id,
       blogId: req.body.blogId,
     }
   })
   console.log('comment posted');
-  res.redirect('/comments');
+  res.status(200);
 };
 
 const updateLikeOrDislikeComment = async (req, res) => {
