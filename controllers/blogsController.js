@@ -109,7 +109,6 @@ const likeBlog = async (req, res) => {
     })
     res.json(createdLikedRecord);
   } else if(checkUserBlogLike.like == likeBool) {
-    console.log(checkUserBlogLike.like, likeBool)
     const deletedLikeRecord = await prisma.usersLikedBlogs.delete({
       where: {
         id: checkUserBlogLike.id,

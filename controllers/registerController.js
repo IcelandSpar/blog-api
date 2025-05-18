@@ -10,27 +10,36 @@ const createAccount = async (req, res, next) => {
       }
     });
 
-    if(checkIfUsernameUsed){
-      return res.json({
+
+    if(!!checkIfUsernameUsed){
+
+      return res.status(400).json({
         message: 'Username already exists',
       });
+
+    } else {
+
+
+      const hashedPass = await bcrypt.hash(req.body.password, 10);
+      await prisma.users.create({
+        data: {
+          username: req.body.username,
+          password: hashedPass,
+        }
+      });
+
+      res.status(200).json({
+        message: 'Account created'
+      })
     }
 
 
-    const hashedPass = await bcrypt.hash(req.body.password, 10);
-    await prisma.users.create({
-      data: {
-        username: req.body.username,
-        password: hashedPass,
-      }
-    });
-    res.json({
-      message: 'Account created'
-    })
+
+
   } catch(err) {
     console.error(err);
     next(err);
-    res.json(err)
+    return res.status(400).json(err);
   }
 };
 
