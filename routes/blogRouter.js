@@ -1,7 +1,8 @@
 const { Router } = require('express');
-const { getBlogs, getBlog, updatePublishStatus, postBlog, likeBlog, getBlogPreviews } = require('../controllers/blogsController');
+const { getBlogs, getBlog, updatePublishStatus, postBlog, likeBlog, getBlogPreviews, getUserLikeOnBlog } = require('../controllers/blogsController');
 const passport = require('passport');
 const blogRouter = Router();
+
 
 
 
@@ -10,7 +11,11 @@ blogRouter.get('/', getBlogs);
 
 blogRouter.get('/preview', getBlogPreviews);
 
+
+
 blogRouter.get('/:blogId', getBlog);
+
+blogRouter.get('/:blogId/check-user-like', passport.authenticate('jwt', {session: false}), getUserLikeOnBlog);
 
 
 // Form data needed to post blog: 

@@ -1,4 +1,7 @@
+require('dotenv').config();
 const prisma = require('../db/prismaClient');
+const jwt = require('jsonwebtoken');
+
 
 
 const getBlogs = async (req, res) => {
@@ -45,6 +48,20 @@ blog.dislikes = dislikes;
 
   res.json(blog);
 };
+
+const getUserLikeOnBlog = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const verifiedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+  const userLike = await prisma.usersLikedBlogs.findFirst({
+    where: {
+      userId: verifiedToken.id,
+      blogId: req.params.blogId,
+    }
+  });
+
+  res.json(userLike);
+}
 
 const getBlogPreviews = async (req, res) => {
   const blogPreview = await prisma.blogs.findMany({
@@ -159,6 +176,7 @@ const likeBlog = async (req, res) => {
 module.exports = {
   getBlogs,
   getBlog,
+  getUserLikeOnBlog,
   getBlogPreviews,
   updatePublishStatus,
   postBlog,
