@@ -12,8 +12,16 @@ const getBlog = async (req, res) => {
     where: {
       id: req.params.blogId
     },
-
     include: {
+      _count: {
+        select: {
+          UsersLikedBlogs: {
+            where: {
+              like: true,
+            }
+          }
+        }
+      },
       author: {
         include: {
           user: {
@@ -25,6 +33,15 @@ const getBlog = async (req, res) => {
       }
     }
   });
+
+  const dislikes = await prisma.usersLikedBlogs.count({
+    where: {
+      blogId: req.params.blogId,
+      like: false,
+    }
+  })
+
+blog.dislikes = dislikes;
 
   res.json(blog);
 };
@@ -34,8 +51,16 @@ const getBlogPreviews = async (req, res) => {
     where: {
       // published: true,
     },
-
     include: {
+      _count: {
+        select: {
+          UsersLikedBlogs: {
+            where: {
+              like: true,
+            }
+          }
+        }
+      },
       author: {
         include: {
           user: {
@@ -45,9 +70,8 @@ const getBlogPreviews = async (req, res) => {
           }
         }
       }
-    }
+    },
   });
-
   res.json(blogPreview);
 };
 
@@ -128,6 +152,7 @@ const likeBlog = async (req, res) => {
     res.json(updatedLikeRecord)
   }
 };
+
 
 
 

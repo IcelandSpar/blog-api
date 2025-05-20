@@ -72,14 +72,14 @@ model UserLikedComments {
 
   user      Users    @relation(fields: [userId], references: [id])
   userId    String
-  comment   Comments @relation(fields: [commentId], references: [id])
+  comment   Comments @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId String
 }
 
 model authorHeartedComments {
   id String @id @default(uuid())
 
-  comment   Comments @relation(fields: [commentId], references: [id])
+  comment   Comments @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId String
   author    Authors  @relation(fields: [authorId], references: [id])
   authorId  String

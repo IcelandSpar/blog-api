@@ -6,6 +6,8 @@ const prisma = require("../db/prismaClient");
 
 
 const getComments = async (req, res) => {
+  console.log('getting comments')
+
   if (req.query.sort == "date" && req.query.direction && req.query.userId) {
     const comments = await prisma.comments.findMany({
       where: {
@@ -109,10 +111,9 @@ const getComments = async (req, res) => {
 };
 
 const postComment = async (req, res) => {
-
+  console.log('posting comment...')
   const token = req.headers.authorization.split(' ')[1];
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
   await prisma.comments.create({
     data: {
       commentTitle: req.body.title,
