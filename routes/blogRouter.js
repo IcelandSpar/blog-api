@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getBlogs, getBlog, updatePublishStatus, postBlog, likeBlog, getBlogPreviews, getUserLikeOnBlog } = require('../controllers/blogsController');
+const { getBlogs, getBlog, updatePublishStatus, postBlog, likeBlog, getBlogPreviews, getUserLikeOnBlog, deleteUserBlogLike } = require('../controllers/blogsController');
 const passport = require('passport');
 const blogRouter = Router();
 
@@ -34,7 +34,8 @@ blogRouter.post('/post-blog', postBlog);
 
 blogRouter.put('/publish', updatePublishStatus);
 
-blogRouter.put('/like-blog/:blogId/:userId/:likeBool', likeBlog);
+blogRouter.put('/like-blog/:blogId/:likeBool', passport.authenticate('jwt', {session: false}),likeBlog);
+blogRouter.delete('/delete-like-blog/:blogId/:likeBool', passport.authenticate('jwt', {session: false}), deleteUserBlogLike);
 
 
 module.exports = blogRouter;

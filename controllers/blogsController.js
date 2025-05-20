@@ -130,11 +130,14 @@ const updatePublishStatus = async (req, res) => {
 };
 
 const likeBlog = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);
+  
 
   const checkUserBlogLike = await prisma.usersLikedBlogs.findFirst({
     where: {
       blogId: req.params.blogId,
-      userId: req.params.userId,
+      userId: user.id,
     }
   });
 
@@ -145,7 +148,7 @@ const likeBlog = async (req, res) => {
       data: {
         like: likeBool,
         blogId: req.params.blogId,
-        userId: req.params.userId,
+        userId: user.id,
       }
     })
     res.json(createdLikedRecord);
@@ -170,6 +173,28 @@ const likeBlog = async (req, res) => {
   }
 };
 
+const deleteUserBlogLike = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);
+
+  const likeToBeDeleted = await prisma.usersLikedBlogs.findFirst({
+    where: {
+      userId: user.id,
+      blogId: req.params.blogId,
+    }
+  })
+
+  const deletedLike = await prisma.usersLikedBlogs.delete({
+    where: {
+      id: likeToBeDeleted.id,
+    }
+  });
+
+
+  res.json(deletedLike)
+  
+}
+
 
 
 
@@ -181,4 +206,5 @@ module.exports = {
   updatePublishStatus,
   postBlog,
   likeBlog,
+  deleteUserBlogLike,
 }
