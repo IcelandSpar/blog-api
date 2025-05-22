@@ -48,7 +48,9 @@ model Comments {
 }
 
 model Authors {
-  id String @id @default(uuid())
+  id     String   @id @default(uuid())
+  bio    String?  @db.VarChar(255)
+  joined DateTime @default(now())
 
   Blogs                 Blogs[]
   user                  Users                   @relation(fields: [userId], references: [id])

@@ -88,6 +88,9 @@ const getBlogPreviews = async (req, res) => {
         }
       }
     },
+    orderBy: {
+      createdAt: 'desc',
+    }
   });
   res.json(blogPreview);
 };

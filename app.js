@@ -6,7 +6,8 @@ const app = express();
 const blogsRouter = require('./routes/blogRouter');
 const commentsRouter = require('./routes/commentsRouter');
 const auth = require('./routes/auth');
-const registerRouter = require('./routes/registerRouter')
+const registerRouter = require('./routes/registerRouter');
+const authorRouter = require('./routes/authorRouter');
 
 app.use(cors());
 
@@ -18,6 +19,7 @@ require('./passport/local');
 app.use('/login', auth);
 app.use('/blogs', blogsRouter);
 app.use('/comments', commentsRouter);
+app.use('/author', authorRouter);
 app.use('/register', registerRouter);
 
 app.listen(process.env.APP_PORT, () => {
