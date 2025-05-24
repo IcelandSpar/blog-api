@@ -7,8 +7,15 @@ const prisma = require("../db/prismaClient");
 
 const getComments = async (req, res) => {
   console.log('getting comments')
+  let userId = req.query.userId;
+  if(req.headers.authorization != undefined || req.headers.athorization != null) {
+    const token = req.headers.authorization.split(' ')[1];
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+    userId = user.id;
+  }
 
-  if (req.query.sort == "date" && req.query.direction && req.query.userId) {
+
+  if (req.query.sort == "date" && req.query.direction && userId) {
     const comments = await prisma.comments.findMany({
       where: {
         blogId: req.params.blogId
@@ -35,7 +42,7 @@ const getComments = async (req, res) => {
     });
 
     res.json(comments);
-  } else if (req.query.sort == "likes" && req.query.direction && req.query.userId) {
+  } else if (req.query.sort == "likes" && req.query.direction && userId) {
     const comments = await prisma.comments.findMany({
       where: {
         blogId: req.params.blogId
@@ -51,7 +58,7 @@ const getComments = async (req, res) => {
         },
         UserLikedComments: {
           where: {
-            userId: req.query.userId,
+            userId: userId,
           },
           select: {
             userId: true,
@@ -62,7 +69,7 @@ const getComments = async (req, res) => {
     });
 
     res.json(comments);
-  } else if(req.query.userId == undefined){
+  } else if(userId == undefined){
     const comments = await prisma.comments.findMany({
       where: {
         blogId: req.params.blogId
@@ -80,7 +87,7 @@ const getComments = async (req, res) => {
     });
 
     res.json(comments);
-  } else if(req.query.userId != undefined) {
+  } else if(userId != undefined) {
     const comments = await prisma.comments.findMany({
       where: {
         blogId: req.params.blogId
@@ -96,7 +103,7 @@ const getComments = async (req, res) => {
         },
         UserLikedComments: {
           where: {
-            userId: req.query.userId,
+            userId: userId,
           },
           select: {
             userId: true,
@@ -108,6 +115,9 @@ const getComments = async (req, res) => {
 
     res.json(comments);
   }
+
+
+
 };
 
 const postComment = async (req, res) => {
