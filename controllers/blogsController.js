@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { compare } = require('bcryptjs');
 const prisma = require('../db/prismaClient');
 const jwt = require('jsonwebtoken');
 
@@ -64,35 +65,105 @@ const getUserLikeOnBlog = async (req, res) => {
 }
 
 const getBlogPreviews = async (req, res) => {
-  const blogPreview = await prisma.blogs.findMany({
-    where: {
-      // published: true,
-    },
-    include: {
-      _count: {
-        select: {
-          UsersLikedBlogs: {
-            where: {
-              like: true,
+
+  if(req.query.sort == 'date') {
+    const blogPreview = await prisma.blogs.findMany({
+      where: {
+        // published: true,
+      },
+      include: {
+        _count: {
+          select: {
+            UsersLikedBlogs: {
+              where: {
+                like: true,
+              }
+            }
+          }
+        },
+        author: {
+          include: {
+            user: {
+              select: {
+                username: true,
+              }
             }
           }
         }
       },
-      author: {
-        include: {
-          user: {
-            select: {
-              username: true,
+      orderBy: {
+        createdAt: req.query.direction,
+      }
+    })
+    res.json(blogPreview);
+  } else if (req.query.sort == 'likes') {
+    const blogPreview = await prisma.blogs.findMany({
+      where: {
+        // published: true,
+      },
+      include: {
+        _count: {
+          select: {
+            UsersLikedBlogs: {
+              where: {
+                like: true,
+              }
+            }
+          }
+        },
+        author: {
+          include: {
+            user: {
+              select: {
+                username: true,
+              }
             }
           }
         }
+      },
+    });
+
+    const compareFunc = (a, b) => b._count.UsersLikedBlogs - a._count.UsersLikedBlogs;
+    
+
+    let sortedBlogPreview = blogPreview.sort(compareFunc)
+
+    res.json(sortedBlogPreview);
+
+  } else {
+
+
+    const blogPreview = await prisma.blogs.findMany({
+      where: {
+        // published: true,
+      },
+      include: {
+        _count: {
+          select: {
+            UsersLikedBlogs: {
+              where: {
+                like: true,
+              }
+            }
+          }
+        },
+        author: {
+          include: {
+            user: {
+              select: {
+                username: true,
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc',
       }
-    },
-    orderBy: {
-      createdAt: 'desc',
-    }
-  });
-  res.json(blogPreview);
+    });
+    res.json(blogPreview);
+  }
+
 };
 
 const postBlog = async (req, res) => {

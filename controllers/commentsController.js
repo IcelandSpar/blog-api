@@ -6,7 +6,6 @@ const prisma = require("../db/prismaClient");
 
 
 const getComments = async (req, res) => {
-  console.log('getting comments')
   let userId = req.query.userId;
   if(req.headers.authorization != undefined || req.headers.athorization != null) {
     const token = req.headers.authorization.split(' ')[1];
