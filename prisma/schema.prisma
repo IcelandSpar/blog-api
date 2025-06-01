@@ -35,9 +35,9 @@ model Comments {
   comment      String   @db.VarChar(255)
   createdAt    DateTime @default(now())
   modifiedAt   DateTime @updatedAt
-  likes        Int      @default(0)
-  dislikes     Int      @default(0)
-  authorHeart  Boolean  @default(false)
+  // likes        Int      @default(0)
+  // dislikes     Int      @default(0)
+  // authorHeart  Boolean  @default(false)
 
   user                  Users                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                String
@@ -79,10 +79,9 @@ model UserLikedComments {
 }
 
 model authorHeartedComments {
-  id String @id @default(uuid())
-
+  id        String   @id @default(uuid())
   comment   Comments @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  commentId String
+  commentId String   @unique
   author    Authors  @relation(fields: [authorId], references: [id])
   authorId  String
 }

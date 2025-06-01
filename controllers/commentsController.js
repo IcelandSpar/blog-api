@@ -28,6 +28,9 @@ const getComments = async (req, res) => {
             username: true
           }
         },
+        authorHeartedComments: {
+
+        },
         UserLikedComments: {
           where: {
             userId: req.query.userId,
@@ -59,6 +62,9 @@ const getComments = async (req, res) => {
           where: {
             userId: userId,
           },
+          authorHeartedComments: {
+
+          },
           select: {
             userId: true,
             like: true,
@@ -81,6 +87,9 @@ const getComments = async (req, res) => {
           select: {
             username: true
           }
+        },
+        authorHeartedComments: {
+
         },
       }
     });
@@ -108,6 +117,9 @@ const getComments = async (req, res) => {
             userId: true,
             like: true,
           }
+        },
+        authorHeartedComments: {
+
         }
       }
     });
