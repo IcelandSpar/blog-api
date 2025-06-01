@@ -28,18 +28,23 @@ const getComments = async (req, res) => {
             username: true
           }
         },
+        UserLikedComments: {
+          where: {
+            like: true,
+          }
+        },
         authorHeartedComments: {
 
         },
-        UserLikedComments: {
-          where: {
-            userId: req.query.userId,
-          },
+        _count: {
           select: {
-            userId: true,
-            like: true,
+            UserLikedComments: {
+              where: {
+                like: false,
+              }
+            }
           }
-        }
+        },
       }
     });
 
@@ -49,9 +54,6 @@ const getComments = async (req, res) => {
       where: {
         blogId: req.params.blogId
       },
-      orderBy: {
-        likes: req.query.direction,
-      },
       include: {
         user: {
           select: {
@@ -60,20 +62,27 @@ const getComments = async (req, res) => {
         },
         UserLikedComments: {
           where: {
-            userId: userId,
-          },
-          authorHeartedComments: {
-
-          },
-          select: {
-            userId: true,
             like: true,
           }
-        }
+        },
+        authorHeartedComments: {
+
+        },
+        _count: {
+          select: {
+            UserLikedComments: {
+              where: {
+                like: false,
+              }
+            }
+          }
+        },
       }
     });
 
-    res.json(comments);
+    const sortedByCommentLikes = comments.sort((a, b) =>  b.UserLikedComments.length - a.UserLikedComments.length)
+
+    res.json(sortedByCommentLikes);
   } else if(userId == undefined){
     const comments = await prisma.comments.findMany({
       where: {
@@ -90,6 +99,20 @@ const getComments = async (req, res) => {
         },
         authorHeartedComments: {
 
+        },
+        UserLikedComments: {
+          where: {
+            like: true,
+          }
+        },
+        _count: {
+          select: {
+            UserLikedComments: {
+              where: {
+                like: false,
+              }
+            }
+          }
         },
       }
     });
@@ -111,21 +134,26 @@ const getComments = async (req, res) => {
         },
         UserLikedComments: {
           where: {
-            userId: userId,
-          },
-          select: {
-            userId: true,
             like: true,
           }
         },
         authorHeartedComments: {
 
-        }
+        },
+        _count: {
+          select: {
+            UserLikedComments: {
+              where: {
+                like: false,
+              }
+            }
+          }
+        },
       }
     });
 
     res.json(comments);
-  }
+  } 
 
 
 
