@@ -33,10 +33,17 @@ commentsRouter.delete('/delete/:commentId', async (req, res) => {
 // example: 
 // http://localhost:3000/comments/like-comment?like=true/false&commentId=1234&operatorType=increment/decrement
 
-commentsRouter.put('/like-comment', updateLikeOrDislikeComment);
+commentsRouter.post('/like-comment/:commentId/:likeStatus',  passport.authenticate('jwt', {session: false}), updateLikeOrDislikeComment);
 
 commentsRouter.put('/author-heart/:blogId/:authorId/:commentId', updateCommentAuthorHeart);
 
-
+commentsRouter.delete('/delete-like/:id', async (req, res) => {
+  const deletedLike = await prisma.userLikedComments.delete({
+    where: {
+      id: req.params.id,
+    }
+  })
+  res.json(deletedLike)
+})
 
 module.exports = commentsRouter;

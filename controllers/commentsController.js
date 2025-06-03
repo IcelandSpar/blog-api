@@ -12,10 +12,10 @@ const getComments = async (req, res) => {
     const user = jwt.verify(token, process.env.JWT_SECRET);
     userId = user.id;
   }
-
+  
 
   if (req.query.sort == "date" && req.query.direction && userId) {
-    const comments = await prisma.comments.findMany({
+    let comments = await prisma.comments.findMany({
       where: {
         blogId: req.params.blogId
       },
@@ -48,9 +48,23 @@ const getComments = async (req, res) => {
       }
     });
 
+    const loggedInUsersLikes = await prisma.userLikedComments.findMany({
+      where: {
+        userId: userId,
+      }
+    });
+
+    comments.forEach((comment) => {
+      loggedInUsersLikes.forEach((userLike) => {
+        if(userLike.commentId == comment.id) {
+          comment.userLikeStatus = userLike.like;
+        }
+      })
+    })
+
     res.json(comments);
   } else if (req.query.sort == "likes" && req.query.direction && userId) {
-    const comments = await prisma.comments.findMany({
+    let comments = await prisma.comments.findMany({
       where: {
         blogId: req.params.blogId
       },
@@ -79,6 +93,20 @@ const getComments = async (req, res) => {
         },
       }
     });
+
+    const loggedInUsersLikes = await prisma.userLikedComments.findMany({
+      where: {
+        userId: userId,
+      }
+    });
+
+    comments.forEach((comment) => {
+      loggedInUsersLikes.forEach((userLike) => {
+        if(userLike.commentId == comment.id) {
+          comment.userLikeStatus = userLike.like;
+        }
+      })
+    })
 
     const sortedByCommentLikes = comments.sort((a, b) =>  b.UserLikedComments.length - a.UserLikedComments.length)
 
@@ -119,7 +147,7 @@ const getComments = async (req, res) => {
 
     res.json(comments);
   } else if(userId != undefined) {
-    const comments = await prisma.comments.findMany({
+    let comments = await prisma.comments.findMany({
       where: {
         blogId: req.params.blogId
       },
@@ -152,6 +180,20 @@ const getComments = async (req, res) => {
       }
     });
 
+    const loggedInUsersLikes = await prisma.userLikedComments.findMany({
+      where: {
+        userId: userId,
+      }
+    });
+
+    comments.forEach((comment) => {
+      loggedInUsersLikes.forEach((userLike) => {
+        if(userLike.commentId == comment.id) {
+          comment.userLikeStatus = userLike.like;
+        }
+      })
+    })
+
     res.json(comments);
   } 
 
@@ -176,40 +218,33 @@ const postComment = async (req, res) => {
 };
 
 const updateLikeOrDislikeComment = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);
 
-  let operator = (req.query.operatorType == 'increment' || req.query.operatorType == 'decrement') ? req.query.operatorType : 'increment';
+  const checkIfUserHasLike = await prisma.userLikedComments.findFirst({
+    where: {
+      commentId: req.params.commentId,
+      userId: user.id,
+    }
+  });
 
-  if(req.query.like == 'true') {
-
-    await prisma.comments.update({
-      where: {
-        id: req.query.commentId,
-      },
+  if(checkIfUserHasLike == null && req.params.likeStatus != 'null') {
+    const likeBool = req.params.likeStatus == 'true' ? true : false;
+    await prisma.userLikedComments.create({
       data: {
-        likes: {
-          [operator]: 1,
-        }
+        userId: user.id,
+        commentId: req.params.commentId,
+        like: likeBool,
       }
-    });
-
-  } else if (req.query.like == 'false') {
-
-    await prisma.comments.update({
-      where: {
-        id: req.query.commentId,
-      },
-      data: {
-        dislikes: {
-          [operator]: 1,
-        }
-      }
-    });
-
+    })
   }
 
+ 
 
+  // console.log(req.params.likeStatus)
+  // console.log(req.params.commentId)
+  res.end()
 
-  res.redirect('/comments');
 };
 
 
