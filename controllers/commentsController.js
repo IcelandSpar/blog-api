@@ -228,12 +228,31 @@ const updateLikeOrDislikeComment = async (req, res) => {
     }
   });
 
+ 
+
   if(checkIfUserHasLike == null && req.params.likeStatus != 'null') {
     const likeBool = req.params.likeStatus == 'true' ? true : false;
     await prisma.userLikedComments.create({
       data: {
         userId: user.id,
         commentId: req.params.commentId,
+        like: likeBool,
+      }
+    })
+  } else if(req.params.likeStatus == 'null' && checkIfUserHasLike) {
+    await prisma.userLikedComments.delete({
+      where: {
+        id: checkIfUserHasLike.id,
+      }
+    });
+  } else if(req.params.likeStatus != 'null' && checkIfUserHasLike && checkIfUserHasLike != req.params.likeStatus) {
+    const likeBool = req.params.likeStatus == 'true' ? true : false;
+
+    await prisma.userLikedComments.update({
+      where: {
+        id: checkIfUserHasLike.id,
+      },
+      data: {
         like: likeBool,
       }
     })
