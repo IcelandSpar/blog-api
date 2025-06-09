@@ -1,4 +1,6 @@
+require('dotenv').config();
 const prisma = require('../db/prismaClient');
+const jwt = require('jsonwebtoken');
 
 const getAuthorAbout = async (req, res) => {
   const authorData = await prisma.authors.findFirst({
@@ -18,8 +20,22 @@ const getAuthorAbout = async (req, res) => {
   res.json(authorData);
 };
 
+const checkIfAuthor = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);
+  const author = await prisma.authors.findFirst({
+    where: {
+      userId: user.id,
+    }
+  })
+  res.json({
+    author,
+  })
+}
+
 
 
 module.exports = {
 getAuthorAbout,
+checkIfAuthor,
 }
