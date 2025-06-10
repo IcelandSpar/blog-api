@@ -33,9 +33,34 @@ const checkIfAuthor = async (req, res) => {
   })
 }
 
+const becomeAuthor = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);
+
+  if(user) {
+    await prisma.authors.create({
+      data: {
+        bio: req.body.bio,
+        userId: user.id,
+      }
+    })
+  }
+};
+
+const deleteAuthor = async (req, res) => {
+  const deletedAuthor = await prisma.authors.delete({
+    where: {
+      id: req.params.id,
+    }
+  })
+
+  res.json(deletedAuthor)
+}
 
 
 module.exports = {
 getAuthorAbout,
 checkIfAuthor,
+becomeAuthor,
+deleteAuthor,
 }
