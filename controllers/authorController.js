@@ -26,6 +26,13 @@ const checkIfAuthor = async (req, res) => {
   const author = await prisma.authors.findFirst({
     where: {
       userId: user.id,
+    },
+    include: {
+      user: {
+        select: {
+          username: true,
+        }
+      }
     }
   })
   res.json({
@@ -57,10 +64,19 @@ const deleteAuthor = async (req, res) => {
   res.json(deletedAuthor)
 }
 
+const getAuthorInfo = async (req, res) => {
+  const token = jwt.verify(req.headers.authorization, process.env.JWT_SECRET).split(' ')[1];
+  res.json(token)
+  // const authorInfo = await prisma.authors.findFirst({
+
+  // })
+}
+
 
 module.exports = {
 getAuthorAbout,
 checkIfAuthor,
 becomeAuthor,
 deleteAuthor,
+getAuthorInfo,
 }
