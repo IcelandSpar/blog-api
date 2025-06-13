@@ -52,6 +52,22 @@ const becomeAuthor = async (req, res) => {
       }
     })
   }
+
+  const author = await prisma.authors.findFirst({
+    where: {
+      userId: user.id,
+    },
+    include: {
+      user: {
+        select: {
+          username: true,
+        }
+      }
+    }
+  })
+  res.json({
+    author,
+  })
 };
 
 const deleteAuthor = async (req, res) => {
