@@ -10,6 +10,7 @@ const getAuthorAbout = async (req, res) => {
     select: {
       id: true,
       bio: true,
+      joined: true,
       user: {
         omit: {
           password: true,
