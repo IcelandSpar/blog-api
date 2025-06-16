@@ -82,11 +82,28 @@ const deleteAuthor = async (req, res) => {
 }
 
 const getAuthorInfo = async (req, res) => {
-  const token = jwt.verify(req.headers.authorization, process.env.JWT_SECRET).split(' ')[1];
-  res.json(token)
+  const token = req.headers.authorization.split(' ')[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);  
+  res.json(user)
   // const authorInfo = await prisma.authors.findFirst({
 
   // })
+}
+
+const updateAuthorBio = async (req, res) => {
+
+  const token = req.headers.authorization.split(' ')[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);
+  const updatedUser = await prisma.authors.update({
+    where: {
+      id: req.params.authorId,
+      userId: user.id,
+    },
+    data: {
+      bio: req.body.bio,
+    }
+  })
+  res.json(updatedUser);
 }
 
 
@@ -96,4 +113,5 @@ checkIfAuthor,
 becomeAuthor,
 deleteAuthor,
 getAuthorInfo,
+updateAuthorBio,
 }
