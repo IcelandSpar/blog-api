@@ -104,6 +104,32 @@ const updateAuthorBio = async (req, res) => {
     }
   })
   res.json(updatedUser);
+};
+
+const getAuthorBlogs = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);
+  const authorBlogs = await prisma.blogs.findMany({
+    where: {
+      authorId: req.params.authorId,
+    },
+    omit: {
+      content: true,
+    },
+    include: {
+      UsersLikedBlogs: {
+        select: {
+          like: true,
+        },
+      },
+      _count: {
+        select: {
+          Comments: true,
+        }
+      }
+    }
+  });
+  res.json(authorBlogs)
 }
 
 
@@ -114,4 +140,5 @@ becomeAuthor,
 deleteAuthor,
 getAuthorInfo,
 updateAuthorBio,
+getAuthorBlogs,
 }

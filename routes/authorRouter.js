@@ -2,11 +2,14 @@ const { Router } = require('express');
 const passport = require('passport');
 const authorRouter = Router();
 
-const { getAuthorAbout, checkIfAuthor, becomeAuthor, deleteAuthor, getAuthorInfo, updateAuthorBio } = require('../controllers/authorController.js');
+const { getAuthorAbout, checkIfAuthor, becomeAuthor, deleteAuthor, getAuthorInfo, updateAuthorBio, getAuthorBlogs } = require('../controllers/authorController.js');
 
 authorRouter.get('/about/author', getAuthorInfo);
 
 authorRouter.get('/about/:authorId', getAuthorAbout);
+
+authorRouter.get('/blogs/:authorId', passport.authenticate('jwt', {session: false}), getAuthorBlogs);
+
 
 authorRouter.get('/check-if-author', passport.authenticate('jwt', {session: false}), checkIfAuthor);
 
