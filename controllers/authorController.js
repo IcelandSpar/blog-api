@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const getAuthorAbout = async (req, res) => {
   const authorData = await prisma.authors.findFirst({
     where: {
-      id: req.params.userId,
+      id: req.params.authorId,
     },
     select: {
       id: true,
@@ -127,8 +127,16 @@ const getAuthorBlogs = async (req, res) => {
           Comments: true,
         }
       }
+    },
+    orderBy: {
+      createdAt: 'asc',
     }
+
   });
+
+  const likesAndDislikes = prisma.blog
+  // const authorBlogsWithLikes = 
+
   res.json(authorBlogs)
 }
 
