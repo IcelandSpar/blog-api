@@ -306,6 +306,16 @@ const updateCommentAuthorHeart = async (req, res) => {
 
 };
 
+const deleteComment = async (req, res) => {
+  const token = req.headers.authorization;
+  // const deletedLike = await prisma.userLikedComments.delete({
+  //   where: {
+  //     id: req.params.id,
+  //   }
+  // })
+  // res.json(deletedLike)
+}
+
 
 
 module.exports = {
@@ -313,4 +323,5 @@ module.exports = {
   postComment,
   updateLikeOrDislikeComment,
   updateCommentAuthorHeart,
+  deleteComment,
 };

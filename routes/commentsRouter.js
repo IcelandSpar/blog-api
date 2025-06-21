@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const passport = require('passport');
-const { getComments, postComment, updateLikeOrDislikeComment, updateCommentAuthorHeart } = require('../controllers/commentsController');
+const { getComments, postComment, updateLikeOrDislikeComment, updateCommentAuthorHeart, deleteComment } = require('../controllers/commentsController');
 const prisma = require('../db/prismaClient');
 
 const commentsRouter = Router();
@@ -21,7 +21,7 @@ commentsRouter.get('/:blogId', getComments);
 
 commentsRouter.post('/post-comment', passport.authenticate('jwt', {session: false}), postComment);
 
-commentsRouter.delete('/delete/:commentId', async (req, res) => {
+commentsRouter.delete('/delete/:commentId', passport.authenticate('jwt', {session: false}), async (req, res) => {
   const deletedItem = await prisma.comments.delete({
     where: {
       id: req.params.commentId,
@@ -37,13 +37,6 @@ commentsRouter.post('/like-comment/:commentId/:likeStatus',  passport.authentica
 
 commentsRouter.put('/author-heart/:blogId/:authorId/:commentId', updateCommentAuthorHeart);
 
-commentsRouter.delete('/delete-like/:id', async (req, res) => {
-  const deletedLike = await prisma.userLikedComments.delete({
-    where: {
-      id: req.params.id,
-    }
-  })
-  res.json(deletedLike)
-})
+commentsRouter.delete('/delete-like/:id', passport.authenticate('jwt', {session: false}) , deleteComment)
 
 module.exports = commentsRouter;
