@@ -258,10 +258,6 @@ const updateLikeOrDislikeComment = async (req, res) => {
     })
   }
 
- 
-
-  // console.log(req.params.likeStatus)
-  // console.log(req.params.commentId)
   res.end()
 
 };
@@ -271,38 +267,38 @@ const updateLikeOrDislikeComment = async (req, res) => {
 
 const updateCommentAuthorHeart = async (req, res) => {
 
+  const token = (req.headers.authorization.split(' '))[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);
   // check if correct author of blog
-
-  const blogData = await prisma.blogs.findFirst({
+  const author = await prisma.authors.findFirst({
     where: {
-      id: req.params.blogId,
+      userId: user.id,
+      id: req.params.authorId
+    },
+  });
+
+  const checkIfAlreadyFavorited = await prisma.authorHeartedComments.findFirst({
+    where: {
+      commentId: req.params.commentId,
     }
   });
 
-  if (blogData.authorId == req.params.authorId) {
-    const commentData = await prisma.comments.findFirst({
+  if(author && checkIfAlreadyFavorited) {
+    const deletedHeart = await prisma.authorHeartedComments.delete({
       where: {
-        blogId: req.params.blogId,
-        id: req.params.commentId,
-      },
-      
-    })
-
-    const updatedComment = await prisma.comments.update({
-      where: {
-        blogId: req.params.blogId,
-        id: req.params.commentId,
-      },
-      data: {
-        authorHeart: !commentData.authorHeart
+        id: checkIfAlreadyFavorited.id,
       }
     });
-
-
-    res.json(updatedComment);
+    res.json(deletedHeart)
+  } else if (author && !checkIfAlreadyFavorited) {
+    const createdUser = await prisma.authorHeartedComments.create({
+      data: {
+        authorId: author.id,
+        commentId: req.params.commentId,
+      }
+    })
+    res.json(createdUser)
   }
-
-
 
 };
 

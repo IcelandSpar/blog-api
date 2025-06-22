@@ -35,7 +35,7 @@ commentsRouter.delete('/delete/:commentId', passport.authenticate('jwt', {sessio
 
 commentsRouter.post('/like-comment/:commentId/:likeStatus',  passport.authenticate('jwt', {session: false}), updateLikeOrDislikeComment);
 
-commentsRouter.put('/author-heart/:blogId/:authorId/:commentId', updateCommentAuthorHeart);
+commentsRouter.post('/author-heart/:authorId/:commentId', passport.authenticate('jwt', {session: false}), updateCommentAuthorHeart);
 
 commentsRouter.delete('/delete-like/:id', passport.authenticate('jwt', {session: false}) , deleteComment)
 
