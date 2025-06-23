@@ -32,7 +32,7 @@ blogRouter.post('/post-blog', postBlog);
 // Form data needed to update: 
 // body.blogId
 
-blogRouter.put('/publish', updatePublishStatus);
+blogRouter.put('/publish/:blogId/:publishStatus', passport.authenticate('jwt', {session: false}), updatePublishStatus);
 
 blogRouter.put('/like-blog/:blogId/:likeBool', passport.authenticate('jwt', {session: false}),likeBlog);
 blogRouter.delete('/delete-like-blog/:blogId/:likeBool', passport.authenticate('jwt', {session: false}), deleteUserBlogLike);

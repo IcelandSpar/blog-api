@@ -183,18 +183,15 @@ const postBlog = async (req, res) => {
 
 
 const updatePublishStatus = async (req, res) => {
-  const blogToUpdate = await prisma.blogs.findFirst({
-    where: {
-      id: req.body.blogId,
-    }
-  });
+
+  const publishStatusParsed = req.params.publishStatus == 'true' ? true : false;
 
   const updatedBlogPublishStatus = await prisma.blogs.update({
     where: {
-      id: req.body.blogId,
+      id: req.params.blogId,
     },
     data: {
-      published: !blogToUpdate.published,
+      published: publishStatusParsed,
     }
   })
 
