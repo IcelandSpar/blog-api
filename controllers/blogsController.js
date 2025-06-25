@@ -69,7 +69,7 @@ const getBlogPreviews = async (req, res) => {
   if(req.query.sort == 'date') {
     const blogPreview = await prisma.blogs.findMany({
       where: {
-        // published: true,
+        published: true,
       },
       include: {
         _count: {
@@ -99,7 +99,7 @@ const getBlogPreviews = async (req, res) => {
   } else if (req.query.sort == 'likes') {
     const blogPreview = await prisma.blogs.findMany({
       where: {
-        // published: true,
+        published: true,
       },
       include: {
         _count: {
@@ -135,7 +135,7 @@ const getBlogPreviews = async (req, res) => {
 
     const blogPreview = await prisma.blogs.findMany({
       where: {
-        // published: true,
+        published: true,
       },
       include: {
         _count: {
