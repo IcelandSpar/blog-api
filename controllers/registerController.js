@@ -11,6 +11,7 @@ const createAccount = async (req, res, next) => {
     });
 
 
+
     if(!!checkIfUsernameUsed){
 
       return res.status(400).json({
@@ -19,14 +20,23 @@ const createAccount = async (req, res, next) => {
 
     } else {
 
-
       const hashedPass = await bcrypt.hash(req.body.password, 10);
-      await prisma.users.create({
+      const createdUser = await prisma.users.create({
         data: {
           username: req.body.username,
           password: hashedPass,
         }
       });
+
+      if(req.body.author == true) {
+        await prisma.authors.create({
+          data: {
+            userId: createdUser.id,
+            bio: req.body.bio,
+          }
+        })
+      }
+
 
       res.status(200).json({
         message: 'Account created'
