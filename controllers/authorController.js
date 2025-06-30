@@ -140,6 +140,36 @@ const getAuthorBlogs = async (req, res) => {
   res.json(authorBlogs)
 }
 
+const deleteBlog = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);
+
+  const isUserAuthor = await prisma.authors.findFirst({
+    where: {
+      userId: user.id,
+    }
+  });
+
+
+  const blogToBeDeleted = await prisma.blogs.findFirst({
+      where: {
+        id: req.params.blogId,
+      },
+  })
+
+    // if user who sent request is the author of the blog, then delete
+    if(blogToBeDeleted.authorId == isUserAuthor.id) {
+  const deletedBlog = await prisma.blogs.delete({
+    where: {
+      id: req.params.blogId,
+    }
+  });
+      return res.json(deletedBlog);
+    } else {
+      return res.status(401);
+    }
+}
+
 
 module.exports = {
 getAuthorAbout,
@@ -149,4 +179,5 @@ deleteAuthor,
 getAuthorInfo,
 updateAuthorBio,
 getAuthorBlogs,
+deleteBlog,
 }

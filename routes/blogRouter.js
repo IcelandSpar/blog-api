@@ -27,7 +27,7 @@ blogRouter.get('/:blogId/check-user-like', passport.authenticate('jwt', {session
 //   authorId: req.body.authorId,
 // }
 
-blogRouter.post('/post-blog', postBlog);
+blogRouter.post('/post-blog', passport.authenticate('jwt', {session: false}), postBlog);
 
 // Form data needed to update: 
 // body.blogId

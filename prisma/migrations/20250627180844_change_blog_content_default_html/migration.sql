@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Blogs" ALTER COLUMN "content" SET DATA TYPE VARCHAR(10000);

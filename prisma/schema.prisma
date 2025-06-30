@@ -17,7 +17,7 @@ datasource db {
 model Blogs {
   id              String            @id @default(uuid())
   title           String            @db.VarChar(255)
-  content         String            @db.VarChar(500)
+  content         String            @db.VarChar(10000)
   createdAt       DateTime          @default(now())
   modifiedAt      DateTime          @updatedAt
   published       Boolean           @default(false)
@@ -90,8 +90,8 @@ model UsersLikedBlogs {
   id   String  @id @default(uuid())
   like Boolean
 
-  user   Users  @relation(fields: [userId], references: [id])
+  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
-  blog   Blogs  @relation(fields: [blogId], references: [id])
+  blog   Blogs  @relation(fields: [blogId], references: [id], onDelete: Cascade)
   blogId String
 }
