@@ -167,8 +167,9 @@ const getBlogPreviews = async (req, res) => {
 };
 
 const postBlog = async (req, res) => {
-
-  const blogToPost = await prisma.blogs.create({
+  
+  try {
+      const blogToPost = await prisma.blogs.create({
     data: {
       title: req.body.title,
       content: req.body.content,
@@ -176,9 +177,17 @@ const postBlog = async (req, res) => {
       authorId: req.body.authorId,
     }
   });
-
   console.log('Blog posted');
-  res.json(blogToPost);
+  res.status(200).json(blogToPost);
+  } catch(err) {
+    if(err) {
+      res.status(400);
+    }
+  }
+
+
+
+
 };
 
 
