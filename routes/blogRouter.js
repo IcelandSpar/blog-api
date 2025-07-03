@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getBlogs, getBlog, updatePublishStatus, postBlog, likeBlog, getBlogPreviews, getUserLikeOnBlog, deleteUserBlogLike } = require('../controllers/blogsController');
+const { getBlogs, getBlog, updatePublishStatus, postBlog, likeBlog, getBlogPreviews, getUserLikeOnBlog, deleteUserBlogLike, editBlog } = require('../controllers/blogsController');
 const passport = require('passport');
 const blogRouter = Router();
 
@@ -16,7 +16,7 @@ blogRouter.get('/preview', getBlogPreviews);
 blogRouter.get('/:blogId', getBlog);
 
 blogRouter.get('/:blogId/check-user-like', passport.authenticate('jwt', {session: false}), getUserLikeOnBlog);
-
+blogRouter.put('/edit-blog/:blogId', passport.authenticate('jwt', {session: false}), editBlog);
 
 // Form data needed to post blog: 
 

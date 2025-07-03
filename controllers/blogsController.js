@@ -275,6 +275,41 @@ const deleteUserBlogLike = async (req, res) => {
   
 }
 
+const editBlog = async (req, res) => {
+  try {
+      const token = req.headers.authorization.split(' ')[1];
+  const user = jwt.verify(token, process.env.JWT_SECRET);
+
+  const author = await prisma.authors.findFirst({
+    where: {
+      userId: user.id,
+    }
+  });
+
+  if(author.id == req.body.authorId) {
+    const updatedBlog = await prisma.blogs.update({
+      where: {
+        id: req.params.blogId,
+      },
+      data: {
+        title: req.body.title,
+        content: req.body.content,
+        published: req.body.published == 'true' ? true : false,
+      }
+    })
+
+    res.status(200).json(updatedBlog);
+  } else {
+    return res.status(401);
+  }
+  } catch(err) {
+    if(err) {
+      res.status(400);
+    }
+  }
+
+}
+
 
 
 
@@ -287,4 +322,5 @@ module.exports = {
   postBlog,
   likeBlog,
   deleteUserBlogLike,
+  editBlog,
 }
