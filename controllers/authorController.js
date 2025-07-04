@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { validationResult } = require('express-validator');
 const prisma = require('../db/prismaClient');
 const jwt = require('jsonwebtoken');
 
@@ -91,6 +92,11 @@ const getAuthorInfo = async (req, res) => {
 }
 
 const updateAuthorBio = async (req, res) => {
+
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+        return res.status(400).json(errors)
+  }
 
   const token = req.headers.authorization.split(' ')[1];
   const user = jwt.verify(token, process.env.JWT_SECRET);
