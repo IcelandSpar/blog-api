@@ -2,6 +2,7 @@ require('dotenv').config();
 const { compare } = require('bcryptjs');
 const prisma = require('../db/prismaClient');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
 
 
 
@@ -167,6 +168,11 @@ const getBlogPreviews = async (req, res) => {
 };
 
 const postBlog = async (req, res) => {
+
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    res.status(400).json(errors);
+  };
   
   try {
       const blogToPost = await prisma.blogs.create({
@@ -276,6 +282,12 @@ const deleteUserBlogLike = async (req, res) => {
 }
 
 const editBlog = async (req, res) => {
+
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    res.status(400).json(errors);
+  };
+  
   try {
       const token = req.headers.authorization.split(' ')[1];
   const user = jwt.verify(token, process.env.JWT_SECRET);
