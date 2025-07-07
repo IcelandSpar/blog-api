@@ -1,8 +1,15 @@
 const prisma = require('../db/prismaClient');
 const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 
 
 const createAccount = async (req, res, next) => {
+
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(400).json(errors);
+  }
+
   try {
     const checkIfUsernameUsed = await prisma.users.findFirst({
       where: {
@@ -15,7 +22,7 @@ const createAccount = async (req, res, next) => {
     if(!!checkIfUsernameUsed){
 
       return res.status(400).json({
-        message: 'Username already exists',
+        message: 'Username already exists, please try again',
       });
 
     } else {
